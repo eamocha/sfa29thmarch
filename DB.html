@@ -1,0 +1,95 @@
+GOOMONRING TABLE
+TBL_TARGETS TABLE
+recreate a table and remove duplicates
+CREATE TABLE tmp_table LIKE tbl_survey;
+   ALTER IGNORE TABLE tmp_table ADD UNIQUE INDEX dupidx (survey_id);
+   INSERT IGNORE INTO tmp_table SELECT * FROM tbl_survey;
+   DROP TABLE tbl_survey;
+   RENAME TABLE tmp_table TO tbl_survey;
+   
+   
+   
+   SET GLOBAL sql_mode=(SELECT REPLACE(@@sql_mode,'ONLY_FULL_GROUP_BY',''));
+   
+   
+   
+UPDATE `tbl_assets` a INNER JOIN tbl_assetsfromdemo b on a.`asset_id`=b.asset_id SET  a.`asset_size`=b.`asset_size`,a.`asset_number`=b.`asset_number`,a.`model`=b.`model`,a.`name`=b.`name`,a.`code`=b.`code`,a.`code_format`=b.`code_format`,a.`serial`=b.`serial`,a.`date_isued`=b.`date_isued`,a.`remarks`=b.`remarks`, a.verification_status=b.verification_status,a.last_visited=b.last_visited,a.asset_condition=b.asset_condition,a.asset_size=b.asset_size, a.asset_number=b.asset_number,a.code=b.code,a.model=b.model,a.name=b.name WHERE 1
+
+
+
+UPDATE `tbl_dealers` a INNER JOIN tbl_dealersfromdemo b on a.dealer_id=b.dealer_id SET a.`business_name`=b.business_name,a.`channel`=b.channel,a.`owner_name`=b.owner_name,a.`designation`=b.designation,a.`town`=b.town,a.`phone`=b.phone,a.`type_of_class`=b.type_of_class,a.`neibourhood_income`=b.neibourhood_income,a.`status`=b.status,a.`route_id`=b.route_id,a.`verified`=b.verified,a.`key_account`=b.key_account,a.`location_occassions`=b.key_account,a.`opening_time`=b.opening_time,a.`closing_time`=b.closing_time,a.`has_electricity`=b.has_electricity,a.`sales_fmcg`=b.sales_fmcg,a.`sales_coke_products`=b.sales_coke_products,a.`do_you_sell_any_bevs`=b.do_you_sell_any_bevs,a.`why_dd_yu_stop_stocking_coke`=b.why_dd_yu_stop_stocking_coke,a.`dealer_has_asset`=b.dealer_has_asset,a.`landmark_building`=b.landmark_building,a.`stocked_coke_inthePast`=b.stocked_coke_inthePast,a.`willing_to_stock_coke`=b.willing_to_stock_coke,a.`willingness_remarks`=b.willingness_remarks,a.`remarks`=b.remarks,a.`last_visisted`=b.last_visisted,a.`first_sold_to`=b.`first_sold_to`,a.`close_remarks`=b.`close_remarks` WHERE 1
+   
+   
+   date format no working
+   
+   SELECT @@GLOBAL.sql_mode global, @@SESSION.sql_mode session;
+SET sql_mode = '';
+SET GLOBAL sql_mode = '';
+///////////////////////////
+update `tbl_route_sales` a INNER JOIN tbl_routes b ON a.`route_id`=b.route_id SET a.distributor_id=b.distributor_id WHERE 1 update `tbl_route_sales` a INNER JOIN tbl_routes b ON a.`route_id`=b.route_id SET a.distributor_id=b.distributor_id WHERE 1
+//
+update `tbl_distributors` a INNER JOIN tbl_route_sales b ON a.`distributor_id`=b.distributor_id SET distributor_contribution=sum(b.qty_sold) WHERE 1
+
+
+////
+
+///for all routes not in cluster
+SELECT * FROM `tbl_assign_route2adcluster`  WHERE ad_cluster_id NOT IN (SELECT `ad_cluster_id` FROM tbl_ad_clusters WHERE 1  )
+ALTER TABLE `almasisf_sfa`.`tbl_assets` ADD UNIQUE `uniq_assets_status` (`model`, `name`, `code`, `code_format`, `serial`, `status`, `reg_by`, `dealer_id`, `remarks`,`asset_condition`) COMMENT '';
+
+
+////update capitalize dealer names
+UPDATE tbl_dealers SET business_name = CONCAT(UCASE(LEFT(business_name, 1)), SUBSTRING(business_name, 2))
+UPDATE tbl_dealers SET business_name=CONCAT(UCASE(MID(business_name,1,1)),LCASE(MID(business_name,2)))
+
+
+//alignment
+UPDATE `tbl_routes` a INNER JOIN tbl_distributors b on a.distributor_id=b.distributor_id SET a.area_id=b.area_id WHERE  1
+
+
+////assets verification during registra
+UPDATE `tbl_assets` set last_visited=date_isued,verification_status='Verified' WHERE date(date_isued)>='2017-10-30' AND last_visited=''
+
+
+
+////
+SELECT full_name,area_name,route_name,distributor_name,product,date_sold,qty_sold FROM `tbl_route_sales` a INNER JOIN tbl_users b on sold_by=b.user_id LEFT JOIN tbl_products c on c.product_id=sku_id LEFT JOIN tbl_routes d on d.route_id=a.route_id LEFT JOIN tbl_distributors e on e.distributor_id=d.distributor_id LEFT JOIN tbl_areas f on f.area_id=a.area_id WHERE sold_by=10301  
+ORDER BY a.area_id,a.distributor_id,a.route_id,a.`date_sold` ASC
+
+
+///stock
+SELECT area_name,distributor_name, full_name,product,date_taken,d.pack_size,d.pack_type,qty FROM `tbl_distributor_stock_levels` a INNER JOIN tbl_distributors b ON a.distributor_id=b.distributor_id LEFT JOIN tbl_areas c on b.area_id=c.area_id LEFT JOIN tbl_products d on a.product_id=d.product_id LEFT JOIN tbl_users e on e.user_id=taken_by WHERE b.region_id=1 ORDER BY c.area_id,a.distributor_id, date_taken
+///dealers
+SELECT area_name,distributor_name,route_name, `business_name`, channel_name, `owner_name`, `designation`, a.`town`, a.`longtitute`, a.`latitute`,  `phone`, `full_name`, `type_of_class`, `neibourhood_income`, a.`reg_date`, `verified`,  `location_occassions`, `opening_time`, `closing_time`, `has_electricity`, `sales_fmcg`, `sales_coke_products`, `do_you_sell_any_bevs`, `why_dd_yu_stop_stocking_coke`, `dealer_has_asset`, `landmark_building`, `stocked_coke_inthePast`, `willing_to_stock_coke`, `willingness_remarks`, `remarks`, `last_visisted`, `close_remarks` FROM `tbl_dealers` a JOIN tbl_routes b ON b.route_id=a.route_id JOIN tbl_distributors c ON c.distributor_id=a.distributor_id INNER JOIN tbl_areas d on a.area_id=d.area_id JOIN tbl_outlet_channels e ON e.channel_id=channel JOIN tbl_users f ON a.added_by=f.user_id WHERE a.region_id=1 ORDER BY a.area_id,a.distributor_id,a.route_id,a.added_by
+
+
+////erified outlets
+SELECT area_name,distributor_name,route_name, `business_name`, channel_name, `owner_name`, `designation`, a.`town`, a.`longtitute`, a.`latitute`, `phone`, `full_name`, `type_of_class`, `neibourhood_income`, a.`reg_date`, `verified`, `location_occassions`, `opening_time`, `closing_time`, `has_electricity`, `sales_fmcg`, `sales_coke_products`, `do_you_sell_any_bevs`, `why_dd_yu_stop_stocking_coke`, `dealer_has_asset`, `landmark_building`, `stocked_coke_inthePast`, `willing_to_stock_coke`, `willingness_remarks`, `remarks`, `last_visisted`, `close_remarks` FROM `tbl_dealers` a JOIN tbl_routes b ON b.route_id=a.route_id JOIN tbl_distributors c ON c.distributor_id=a.distributor_id INNER JOIN tbl_areas d on a.area_id=d.area_id JOIN tbl_outlet_channels e ON e.channel_id=channel JOIN tbl_users f ON a.added_by=f.user_id WHERE a.region_id=1 AND verified=1 ORDER BY a.area_id,a.distributor_id,a.route_id,a.added_by
+
+
+// asssets 
+SELECT  area_name,distributor_name,route_name, business_name,asset_size, asset_number, model, name, code, code_format, serial, date_isued,  a.remarks, asset_condition, last_visited, verification_status FROM tbl_assets a JOIN tbl_dealers b ON b.dealer_id=a.dealer_id JOIN tbl_routes c ON b.route_id=c.route_id JOIN tbl_distributors d on b.distributor_id=d.distributor_id JOIN tbl_areas e ON e.area_id=b.area_id WHERE b.region_id=1 AND a.status=0 ORDER by b.area_id,b.distributor_id,b.route_id
+
+
+///plans
+SELECT area_name, distributor_name,route_name, business_name, `lon`, `lat`, `closed`, `time_in`, `time_out`,  `full_name`,CASE visted WHEN 1 THEN 'VISITED' ELSE '-' END AS visted_status ,`date_visted`,`startdate` as date_planned, `merchandized`, `stock_taken`, `order_done`, `when_scheduled`, `distance_from_visit_point`, `outlet_closed`, a.`remarks` FROM `tbl_route_plan` a INNER JOIN tbl_dealers b on a.dealer_id=b.dealer_id JOIN tbl_routes c ON b.route_id=c.route_id INNER JOIN tbl_distributors d ON d.distributor_id=b.distributor_id JOIN tbl_areas e on e.area_id=b.area_id JOIN tbl_users f ON a.assigned_to=f.user_id WHERE b.region_id=1 AND a.status=0 order BY user_id,area_name, distributor_name,route_name, business_name
+
+
+///outlets orders/sakles
+SELECT full_name AS AD, area_name, distributor_name,route_name, business_name, `product`,g.pack_size,g.pack_type,g.product_desc as unit,g.sku_type, `cases`, `pieces`, `made_by`, `date_added`  FROM `tbl_orders_details` a INNER JOIN tbl_dealers b on a.dealer_id=b.dealer_id JOIN tbl_routes c ON b.route_id=c.route_id INNER JOIN tbl_distributors d ON d.distributor_id=b.distributor_id JOIN tbl_areas e on e.area_id=b.area_id JOIN tbl_users f ON a.made_by=f.user_id JOIN tbl_products g ON g.product_id=a.product_id WHERE b.region_id=1 AND a.status=0 order BY f.user_id,area_name, distributor_name,route_name, business_name
+
+////comercial tracker
+
+SELECT full_name as Name,logins as 'Last Login',appVersion, area_name, COUNT(e.dealer_id) as 'Total Outlets', SUM(type_of_class IS NOT NULL)  as verified,COUNT(asset_id) as 'Total Assets', SUM(f.verification_status='Verified') AS 'Assets Verified',COUNT(g.id) AS plans,SUM(g.visted=1) AS visited,sum(h.qty_sold) as sellout FROM tbl_users a left JOIN tbl_adcluster_asignments b ON a.user_id=b.ad_id LEFT JOIN tbl_areas c ON c.area_id=a.area_id LEFT JOIN tbl_assign_route2adcluster d ON d.ad_cluster_id=b.ad_cluster_id LEFT JOIN tbl_dealers e on e.route_id=d.route_id LEFT JOIN tbl_assets f ON f.dealer_id=e.dealer_id LEFT JOIN tbl_route_plan g on g.id=a.user_id  LEFT JOIN tbl_route_sales h on h.sold_by=a.user_id left JOIN tbl_good_morning_meeting i on i.taken_by=a.user_id LEFT JOIN tbl_distributor_stock_levels j ON j.taken_by=a.user_id
+WHERE a.status=0 AND b.status=0 and c.status=0 AND d.status=0 and e.status=0 and f.status=0 and g.status=0 and h.status=0 and i.status=0 and j.status=0 GROUP BY user_id LIMIT 1
+
+
+UPDATE `tbl_areas` a INNER JOIN tbl_users b on a.area_id=b.area_id SET arm_incharge=b.user_id WHERE role=3 AND b.status=0 and a.status=0
+///////
+summary of outlet perormance
+SELECT a.user_id, role, a.full_name, count(b.id) as planned, COALESCE(SUM(b.visted=1),0) AS visited, AVG(b.distance_from_visit_point) AS 'Average Distance from outlet points', COUNT(c.dealer_id) AS registered, COALESCE(sum(d.cases),0) as cases, COALESCE(sum(d.cases),0) as pcs
+FROM tbl_users a LEFT JOIN tbl_route_plan b on ( a.user_id=b.made_by AND ( date(b.startdate)=date(now()) OR b.startdate=null) AND b.status=0) LEFT JOIN tbl_dealers c ON (a.user_id=c.added_by AND c.status=0 AND date(c.reg_date)=date(now())) LEFT JOIN tbl_orders_details d ON (d.made_by=a.user_id AND d.status=0 AND date(d.date_added)=date(now()))
+WHERE a.status=0 GROUP BY a.user_id  
+ORDER BY `planned`  DESC
+///short day
+SELECT DATE_FORMAT(startdate,'%a') as dayname FROM `tbl_route_plan` WHERE 1  GROUP BY dayname

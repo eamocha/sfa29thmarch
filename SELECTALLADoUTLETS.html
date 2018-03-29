@@ -1,0 +1,5 @@
+UPDATE tbl_routes SET route_contribution= FLOOR( 1 + RAND( ) *5 )
+
+
+
+SELECT business_name,dealer_id,region_id,area_id, distributor_id,cluster_id,route_id,town,owner_name,phone,added_by,reg_date,channel,    sales_fmcg,do_you_sell_any_bevs,sales_coke_products,stocked_coke_inthePast,willing_to_stock_coke,willingness_remarks,why_dd_yu_stop_stocking_coke FROM tbl_dealers where route_id IN(SELECT a.route_id from tbl_assign_route2adcluster a inner join tbl_adcluster_asignments b on a.ad_cluster_id=b.ad_cluster_id where b.ad_id=58) and status=0 order by dealer_id 

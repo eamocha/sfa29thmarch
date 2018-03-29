@@ -1,0 +1,32 @@
+SET SQL_BIG_SELECTS=1;
+insert into tbl_combined(`dealer_id`, `business_name`, `channel`, `owner_name`, `designation`, `town`, `longtitute`, `latitute`, `email`, `phone`, `added_by`, `type_of_class`, `neibourhood_income`, `reg_date`, `route_id`, `route_order`, `distributor_id`, `cluster_id`, `area_id`, `region_id`, `syncStatus`, `dateTimeModified`, `verified`, `key_account`, `location_occassions`, `opening_time`, `closing_time`, `has_electricity`, `sales_fmcg`, `sales_coke_products`, `do_you_sell_any_bevs`, `why_dd_yu_stop_stocking_coke`, `dealer_has_asset`, `landmark_building`, `stocked_coke_inthePast`, `willing_to_stock_coke`, `willingness_remarks`, `remarks`, `last_visisted`, `first_sold_to`, `close_remarks`,`survey_id`, `survey_date`, `q_id`, `answer`) select a.`dealer_id`, `business_name`, `channel`, `owner_name`, `designation`, `town`, `longtitute`, `latitute`, `email`, `phone`, `added_by`, `type_of_class`, `neibourhood_income`, `reg_date`, `route_id`, `route_order`, `distributor_id`, `cluster_id`, `area_id`, `region_id`, `syncStatus`, `dateTimeModified`, `verified`, `key_account`, `location_occassions`, `opening_time`, `closing_time`, `has_electricity`, `sales_fmcg`, `sales_coke_products`, `do_you_sell_any_bevs`, `why_dd_yu_stop_stocking_coke`, `dealer_has_asset`, `landmark_building`, `stocked_coke_inthePast`, `willing_to_stock_coke`, `willingness_remarks`, `remarks`, `last_visisted`, `first_sold_to`, `close_remarks`,`survey_id`, `survey_date`, `q_id`, `answer` FROM `tbl_dealers` a LEFT join tbl_survey b on b.dealer_id=a.dealer_id WHERE a.status=0 and survey_id>800000  and survey_id<1200000;
+
+
+
+///mettod 2 using inner join This worked properly. Take note of the brackets
+SET SQL_BIG_SELECTS=1;
+insert into tbl_combined(`dealer_id`, `business_name`, `channel`, `owner_name`, `designation`, `town`, `longtitute`, `latitute`, `email`, `phone`, `added_by`, `type_of_class`, `neibourhood_income`, `reg_date`, `route_id`, `route_order`, `distributor_id`, `cluster_id`, `area_id`, `region_id`, `syncStatus`, `dateTimeModified`, `verified`, `key_account`, `location_occassions`, `opening_time`, `closing_time`, `has_electricity`, `sales_fmcg`, `sales_coke_products`, `do_you_sell_any_bevs`, `why_dd_yu_stop_stocking_coke`, `dealer_has_asset`, `landmark_building`, `stocked_coke_inthePast`, `willing_to_stock_coke`, `willingness_remarks`, `remarks`, `last_visisted`, `first_sold_to`, `close_remarks`,`survey_id`, `survey_date`, `q_id`, `answer`) SELECT a.`dealer_id`, `business_name`, `channel`, `owner_name`, `designation`, `town`, `longtitute`, `latitute`, `email`, `phone`, `added_by`, `type_of_class`, `neibourhood_income`, `reg_date`, `route_id`, `route_order`, `distributor_id`, `cluster_id`, `area_id`, `region_id`, `syncStatus`, `dateTimeModified`, `verified`, `key_account`, `location_occassions`, `opening_time`, `closing_time`, `has_electricity`, `sales_fmcg`, `sales_coke_products`, `do_you_sell_any_bevs`, `why_dd_yu_stop_stocking_coke`, `dealer_has_asset`, `landmark_building`, `stocked_coke_inthePast`, `willing_to_stock_coke`, `willingness_remarks`, `remarks`, `last_visisted`, `first_sold_to`, `close_remarks`,`survey_id`, `survey_date`, `q_id`, `answer` FROM (`tbl_dealers` a INNER join tbl_survey b on b.dealer_id=a.dealer_id) WHERE a.status=0 
+
+
+//update area
+UPDATE tbl_combined a INNER JOIN tbl_areas b on a.area_id=b.area_id SET a.area_id=b.area_name
+///update sub area
+UPDATE tbl_combined a INNER JOIN tbl_clusters b on a.cluster_id=b.cluster_id SET a.cluster_id=b.cluster_name
+
+
+///update sub distributor
+UPDATE tbl_combined a INNER JOIN tbl_distributors b on a.distributor_id=b.distributor_id SET a.distributor_id=b.distributor_name
+///update sub distributor
+UPDATE tbl_combined a INNER JOIN tbl_routes b on a.route_id=b.route_id SET a.route_id=b.route_name
+///Question
+///
+UPDATE tbl_combined a INNER JOIN tbl_survey b on a.q_id=b.q_id SET a.q_id=b.question_name
+
+///question name
+UPDATE tbl_combined a INNER JOIN tbl_survey_questions b on a.q_id=b.survey_qID SET a.q_id=b.question
+/////upadte options
+UPDATE `tbl_survey_1` a INNER JOIN tbl_question_options b on a.q_id=b.main_question_id AND a.answer=b.option_id SET answer_interpreted=b.option_name
+
+///updating the aea/route/distributo/region
+SET SQL_BIG_SELECTS=1;
+UPDATE `tbl_combinedInnerJoin` a INNER JOIN tbl_combined b on a.dealer_id=b.dealer_id SET a.route_id=b.route_id,a.area_id=b.area_id, a.cluster_id=b.cluster_id,a.distributor_id=b.distributor_id,a.region_id=b.region_id
